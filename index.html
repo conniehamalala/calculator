@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://img.freepik.com/free-vector/rainbow-frame-cute-doodle-border-vector_53876-135969.jpg?t=st=1737939246~exp=1737942846~hmac=3903f6d8234533ed71495bb01137c287f614df931407513adcdc44e084cc448f&w=1380');
+            background-size: cover;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+        }
+        .calculator {
+            background-color: #fff5f5;
+            padding: 90px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+        .calculation {
+            width: 100%;
+            height: 30px;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #888;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .display {
+            width: 100%;
+            height: 60px;
+            font-size: 30px;
+            text-align: right;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 3px solid #bdbdbd;
+            border-radius: 10px;
+            background-color: #fff5f5;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .buttons button {
+            height: 60px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ffcccb;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .buttons button:hover {
+            background-color: #ffb6c1;
+        }
+        .buttons .operator {
+            background-color: #98fb98;
+        }
+        .buttons .operator:hover {
+            background-color: #90ee90;
+        }
+        .buttons .clear {
+            background-color: #ff6347;
+        }
+        .buttons .clear:hover {
+            background-color: #ff4500;
+        }
+        .buttons .equals {
+            background-color: #32cd32;
+        }
+        .buttons .equals:hover {
+            background-color: #228b22;
+        }
+        .buttons .backspace {
+            background-color: #ffd700;
+        }
+        .buttons .backspace:hover {
+            background-color: #ffa500;
+        }
+        .buttons .exponent {
+            background-color: #dda0dd;
+        }
+        .buttons .exponent:hover {
+            background-color: #da70d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="calculation" id="calculation"></div>
+        <input type="text" class="display" id="display" readonly>
+        <div class="buttons">
+            <button onclick="calculator.appendNumber('7')">7</button>
+            <button onclick="calculator.appendNumber('8')">8</button>
+            <button onclick="calculator.appendNumber('9')">9</button>
+            <button class="operator" onclick="calculator.setOperator('+')">+</button>
+            <button onclick="calculator.appendNumber('4')">4</button>
+            <button onclick="calculator.appendNumber('5')">5</button>
+            <button onclick="calculator.appendNumber('6')">6</button>
+            <button class="operator" onclick="calculator.setOperator('-')">-</button>
+            <button onclick="calculator.appendNumber('1')">1</button>
+            <button onclick="calculator.appendNumber('2')">2</button>
+            <button onclick="calculator.appendNumber('3')">3</button>
+            <button class="operator" onclick="calculator.setOperator('*')">*</button>
+            <button onclick="calculator.appendNumber('0')">0</button>
+            <button class="backspace" onclick="calculator.backspace()">←</button>
+            <button class="clear" onclick="calculator.clearDisplay()">C</button>
+            <button class="equals" onclick="calculator.calculateResult()">=</button>
+            <button class="operator" onclick="calculator.setOperator('/')">/</button>
+            <button class="exponent" onclick="calculator.setOperator('^')">^</button>
+        </div>
+    </div>
+
+    <script>
+        class Calculator {
+            constructor(displayElement, calculationElement) {
+                this.displayElement = displayElement;
+                this.calculationElement = calculationElement;
+                this.displayValue = '';
+                this.operator = '';
+                this.operand1 = '';
+                this.operand2 = '';
+            }
+
+            appendNumber(number) {
+                this.displayValue += number;
+                this.updateDisplay();
+            }
+
+            setOperator(op) {
+                this.operator = op;
+                this.operand1 = this.displayValue;
+                this.displayValue = '';
+                this.updateCalculation();
+            }
+
+            clearDisplay() {
+                this.displayValue = '';
+                this.operator = '';
+                this.operand1 = '';
+                this.operand2 = '';
+                this.updateDisplay();
+                this.updateCalculation();
+            }
+
+            backspace() {
+                this.displayValue = this.displayValue.slice(0, -1);
+                this.updateDisplay();
+            }
+
+            calculateResult() {
+                this.operand2 = this.displayValue;
+                let result;
+                switch(this.operator) {
+                    case '+':
+                        result = parseFloat(this.operand1) + parseFloat(this.operand2);
+                        break;
+                    case '-':
+                        result = parseFloat(this.operand1) - parseFloat(this.operand2);
+                        break;
+                    case '*':
+                        result = parseFloat(this.operand1) * parseFloat(this.operand2);
+                        break;
+                    case '/':
+                        result = parseFloat(this.operand1) / parseFloat(this.operand2);
+                        break;
+                    case '^':
+                        result = Math.pow(parseFloat(this.operand1), parseFloat(this.operand2));
+                        break;
+                    default:
+                        result = 'Error';
+                }
+                this.displayValue = result;
+                this.updateDisplay();
+                this.updateCalculation(true);
+            }
+
+            updateDisplay() {
+                this.displayElement.value = this.displayValue;
+            }
+
+            updateCalculation(isResult = false) {
+                if (isResult) {
+                    this.calculationElement.innerText = `${this.operand1} ${this.operator} ${this.operand2} =`;
+                } else {
+                    this.calculationElement.innerText = `${this.operand1} ${this.operator}`;
+                }
+            }
+        }
+
+        const display = document.getElementById('display');
+        const calculation = document.getElementById('calculation');
+        const calculator = new Calculator(display, calculation);
+    </script>
+</body>
+</html>
